@@ -1,0 +1,26 @@
+#!/bin/bash 
+
+xdotool search --desktop 0 --name "Yandex" windowactivate --sync
+#YA_MUSIC_WINDOW=$(xdotool getactivewindow)
+#xdotool search --desktop 0 "Yandex" windowactivate --sync 
+WINDOW_ID=$(xdotool getactivewindow) 
+
+unset x y w h
+#  WINDOW_ID=$(xwininfo | awk '/Window.id/{print $4}') &&
+  eval $(xwininfo -id $WINDOW_ID |
+  sed -n -e "s/^ \+Absolute upper-left X: \+\([0-9]\+\).*/x=\1/p" \
+         -e "s/^ \+Absolute upper-left Y: \+\([0-9]\+\).*/y=\1/p" \
+         -e "s/^ \+Width: \+\([0-9]\+\).*/w=\1/p" \
+         -e "s/^ \+Height: \+\([0-9]\+\).*/h=\1/p" )
+
+echo $((x+w/2)) $((y+h/2))
+sleep 1
+xdotool mousemove $((x+w/2)) $((y+h/2)) click 1
+sleep 1
+xdotool key  space
+
+
+#xdotool key space
+#-t $(date -d '2019-03-01 10:00:00' +%s) 
+#&& flatpak run eu.tiliado.NuvolaAppYandexMusic
+

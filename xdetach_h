@@ -1,0 +1,18 @@
+#!/bin/bash
+  unset w h
+  THIS_TERMINAL=$(xdotool getactivewindow)
+  WINDOW_ID=$(xwininfo | awk '/Window.id/{print $4}') &&
+  eval $(xwininfo -id $WINDOW_ID |
+    sed -n -e "s/^ \+Width: \+\([0-9]\+\).*/w=\1/p" \
+           -e "s/^ \+Height: \+\([0-9]\+\).*/h=\1/p" )
+
+wmctrl -ir $WINDOW_ID -e 0,-1,-1,1024,600
+xdotool windowminimize $WINDOW_ID  
+echo connect to $(hostname -I):5901
+echo this window will minimize in 2 seconds
+sleep 2
+xdotool windowminimize $THIS_TERMINAL
+x11vnc -rfbauth ~/.vnc/passwd -rfbport 5901 -nocursor -nowf -xdamage -viewonly -id $WINDOW_ID >/dev/null 2>&1 
+wmctrl -ia $THIS_TERMINAL
+wmctrl -ia $WINDOW_ID
+wmctrl -ir $WINDOW_ID -e 0,-1,-1,$w,$h
